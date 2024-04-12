@@ -1,0 +1,17 @@
+.center-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.big-shrimp {
+  font-size: 36px;
+  text-align: center;
+}
+
+.width300 {
+  width: 300px;
+}

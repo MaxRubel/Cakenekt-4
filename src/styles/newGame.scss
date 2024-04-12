@@ -1,0 +1,15 @@
+.new-game-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+#html {
+  width: 400px;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  /* Just for demonstration */
+}
