@@ -26,29 +26,33 @@ export default function CakenektFour({ gameId }) {
   }, [gameState]);
 
   const handleKeydown = (e) => {
-    setCanSend((preVal) => true);
-    if (e.key === "ArrowLeft" || e.key === "a") {
-      setGameState((prevState) => ({
-        ...prevState,
-        playingCol:
-          prevState.playingCol > 0
-            ? prevState.playingCol - 1
-            : prevState.playingCol,
-      }));
-    }
+    if (
+      (isPlayer === 1 && gameState.turn === "black") ||
+      (isPlayer === 2 && gameState.turn === "red")
+    ) {
+      setCanSend((preVal) => true);
+      if (e.key === "ArrowLeft" || e.key === "a") {
+        setGameState((prevState) => ({
+          ...prevState,
+          playingCol:
+            prevState.playingCol > 0
+              ? prevState.playingCol - 1
+              : prevState.playingCol,
+        }));
+      }
+      if (e.key === "ArrowRight" || e.key === "d") {
+        setGameState((prevState) => ({
+          ...prevState,
+          playingCol:
+            prevState.playingCol < 6
+              ? prevState.playingCol + 1
+              : prevState.playingCol,
+        }));
+      }
 
-    if (e.key === "ArrowRight" || e.key === "d") {
-      setGameState((prevState) => ({
-        ...prevState,
-        playingCol:
-          prevState.playingCol < 6
-            ? prevState.playingCol + 1
-            : prevState.playingCol,
-      }));
-    }
-
-    if (e.key === " " || e.key === "ArrowDown") {
-      setSendIt((preVal) => preVal + 1);
+      if (e.key === " " || e.key === "ArrowDown") {
+        setSendIt((preVal) => preVal + 1);
+      }
     }
   };
 
@@ -57,7 +61,7 @@ export default function CakenektFour({ gameId }) {
     return () => {
       document.removeEventListener("keydown", handleKeydown);
     };
-  }, []);
+  }, [gameState.turn]);
 
   useEffect(() => {
     const gameRef = db.ref("games").orderByChild("gameId").equalTo(gameId);
@@ -102,9 +106,19 @@ export default function CakenektFour({ gameId }) {
   const switchTurns = (lastChange) => {
     setCanSend((preVal) => true);
     if (gameState.turn === "red") {
-      setGameState((preVal) => ({ ...preVal, turn: "black", lastChange }));
+      setGameState((preVal) => ({
+        ...preVal,
+        turn: "black",
+        lastChange,
+        playingCol: 3,
+      }));
     } else {
-      setGameState((preVal) => ({ ...preVal, turn: "red", lastChange }));
+      setGameState((preVal) => ({
+        ...preVal,
+        turn: "red",
+        lastChange,
+        playingCol: 3,
+      }));
     }
   };
 
