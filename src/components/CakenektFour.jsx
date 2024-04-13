@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import gameBoardImage from "../assets/images/roughGameBoard.png";
 import firebase from "firebase/compat/app";
 import GameContext from "../GameContext";
@@ -6,8 +6,8 @@ import BlackPiece from "./cakenektFour/BlackPiece";
 import RedPiece from "./cakenektFour/RedPiece";
 import "../styles/cakenektFour.scss";
 import GameBoard from "./cakenektFour/GameBoard";
-import { updateGame } from "../../api/game";
-import { initGameBoard } from "./cakenektFour/initGameBoard";
+import { deleteGame, updateGame } from "../../api/game";
+import initGameBoard from "./cakenektFour/initGameBoard";
 
 // eslint-disable-next-line react/prop-types
 export default function CakenektFour({ gameId }) {
@@ -25,39 +25,60 @@ export default function CakenektFour({ gameId }) {
     }
   }, [gameState]);
 
+  useEffect(() => {
+    const onbeforeunloadFn = () => {
+      deleteGame(gameId);
+    };
+    window.addEventListener("beforeunload", onbeforeunloadFn);
+    return () => {
+      window.removeEventListener("beforeunload", onbeforeunloadFn);
+    };
+  }, []);
+
   const handleKeydown = (e) => {
     if (
-      (isPlayer === 1 && gameState.turn === "black") ||
-      (isPlayer === 2 && gameState.turn === "red")
+      (isPlayer === 1 && gameState.turn === "red") ||
+      (isPlayer === 2 && gameState.turn === "black")
     ) {
-      setCanSend((preVal) => true);
-      if (e.key === "ArrowLeft" || e.key === "a") {
-        setGameState((prevState) => ({
-          ...prevState,
-          playingCol:
-            prevState.playingCol > 0
-              ? prevState.playingCol - 1
-              : prevState.playingCol,
-        }));
-      }
-      if (e.key === "ArrowRight" || e.key === "d") {
-        setGameState((prevState) => ({
-          ...prevState,
-          playingCol:
-            prevState.playingCol < 6
-              ? prevState.playingCol + 1
-              : prevState.playingCol,
-        }));
-      }
-
-      if (e.key === " " || e.key === "ArrowDown") {
-        setSendIt((preVal) => preVal + 1);
-      }
+      return;
+    }
+    setCanSend((preVal) => true);
+    if (e.key === "ArrowLeft" || e.key === "a") {
+      setGameState((prevState) => ({
+        ...prevState,
+        playingCol:
+          prevState.playingCol > 0
+            ? prevState.playingCol - 1
+            : prevState.playingCol,
+      }));
+    }
+    if (e.key === "ArrowRight" || e.key === "d") {
+      setGameState((prevState) => ({
+        ...prevState,
+        playingCol:
+          prevState.playingCol < 6
+            ? prevState.playingCol + 1
+            : prevState.playingCol,
+      }));
+    }
+    if (e.key === " " || e.key === "ArrowDown") {
+      setSendIt((preVal) => preVal + 1);
     }
   };
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeydown);
+    if (
+      checkForWinner(gameBoard, "black") ||
+      checkForWinner(gameBoard, "red")
+    ) {
+      if (gameState.turn === "red") {
+        window.alert("player 1 wins!");
+      }
+      if (gameState.turn === "black") {
+        window.alert("player 2 wins!");
+      }
+    }
     return () => {
       document.removeEventListener("keydown", handleKeydown);
     };
@@ -75,22 +96,13 @@ export default function CakenektFour({ gameId }) {
           const newGameBoard = [...gameBoard];
           const [col, row, player] = updatedState.lastChange.split("/");
           newGameBoard[col][row] = player;
-          if (checkForWinner(gameBoard, gameState.turn)) {
-            if (gameState.turn === "black") {
-              window.alert("player 1 wins!");
-            }
-            if (gameState.turn === "red") {
-              window.alert("player 2 wins!");
-            }
-          } else {
-            setGameBoard(newGameBoard);
-          }
+          setGameBoard(newGameBoard);
         }
       }
     };
-    const addedListener = gameRef.on("value", onGameUpdated); // Use "value" instead of "child_added"
+    const addedListener = gameRef.on("value", onGameUpdated);
     return () => {
-      gameRef.off("value", onGameUpdated); // Use "value" to remove the listener
+      gameRef.off("value", onGameUpdated);
     };
   }, [gameId]);
 
