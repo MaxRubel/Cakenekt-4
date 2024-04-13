@@ -4,20 +4,24 @@ import "../styles/App.css";
 import { createNewGame, updateGame } from "../../api/game";
 import GameContext from "../GameContext";
 import { useContext, useEffect } from "react";
+import { initGameBoardString } from "../components/cakenektFour/initGameBoard";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { clearGame } = useContext(GameContext)
+  const { clearGame } = useContext(GameContext);
 
   useEffect(() => {
-    clearGame()
-  }, [])
+    clearGame();
+  }, []);
 
   const handleNewGame = () => {
     const payload = {
       player1: false,
-      player2: false
-    }
+      player2: false,
+      turn: "black",
+      state: "choosing",
+      playingCol: 3,
+    };
 
     createNewGame(payload).then(({ name }) => {
       updateGame({ gameId: name });
