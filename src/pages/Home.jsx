@@ -18,7 +18,7 @@ export default function Home() {
       player1: false,
       player2: false,
       turn: "black",
-      state: "choosing",
+      state: "playing",
       playingCol: 3,
     };
 

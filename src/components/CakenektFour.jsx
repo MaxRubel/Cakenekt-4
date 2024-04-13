@@ -8,22 +8,63 @@ import "../styles/cakenektFour.scss";
 import GameBoard from "./cakenektFour/GameBoard";
 import { deleteGame, updateGame } from "../../api/game";
 import initGameBoard from "./cakenektFour/initGameBoard";
+import Chat from "./Chat";
 
 // eslint-disable-next-line react/prop-types
 export default function CakenektFour({ gameId }) {
   const db = firebase.database();
   const { isPlayer } = useContext(GameContext);
   const [gameState, setGameState] = useState({ turn: "black" });
-  const [gameBoard, setGameBoard] = useState(initGameBoard);
+  const [gameBoard, setGameBoard] = useState([...initGameBoard]);
   const [sendIt, setSendIt] = useState(0);
   const [canSend, setCanSend] = useState(false);
+  const [winner, setWinner] = useState(null);
 
+  //update game state on server
   useEffect(() => {
     if (canSend) {
       updateGame(gameState);
       setCanSend((preVal) => false);
     }
   }, [gameState]);
+
+  //receive game state from server
+  useEffect(() => {
+    const gameRef = db.ref("games").orderByChild("gameId").equalTo(gameId);
+    const onGameUpdated = (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const updatedState = Object.values(data)[0];
+        setGameState(updatedState);
+        setCanSend((preVal) => false);
+        if (updatedState.lastChange) {
+          const newGameBoard = [...gameBoard];
+          const [col, row, player] = updatedState.lastChange.split("/");
+          newGameBoard[col][row] = player;
+          setGameBoard((prevBoard) => {
+            const newGameBoard = JSON.parse(JSON.stringify(prevBoard));
+            newGameBoard[col][row] = player;
+            return newGameBoard;
+          });
+        } else {
+          setGameState((preVal) => ({ ...preVal, state: "playing" }));
+          setGameBoard([
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+            [null, null, null, null, null, null],
+          ]);
+        }
+      }
+    };
+    const addedListener = gameRef.on("value", onGameUpdated);
+    return () => {
+      gameRef.off("value", onGameUpdated);
+    };
+  }, [gameId]);
 
   useEffect(() => {
     const onbeforeunloadFn = () => {
@@ -37,6 +78,8 @@ export default function CakenektFour({ gameId }) {
 
   const handleKeydown = (e) => {
     if (
+      gameState.state === "gameOver" ||
+      e.srcElement.id === "chatInput" ||
       (isPlayer === 1 && gameState.turn === "red") ||
       (isPlayer === 2 && gameState.turn === "black")
     ) {
@@ -66,45 +109,28 @@ export default function CakenektFour({ gameId }) {
     }
   };
 
+  //add event listener for moving piece
   useEffect(() => {
-    document.addEventListener("keydown", handleKeydown);
-    if (
-      checkForWinner(gameBoard, "black") ||
-      checkForWinner(gameBoard, "red")
-    ) {
-      if (gameState.turn === "red") {
-        window.alert("player 1 wins!");
-      }
-      if (gameState.turn === "black") {
-        window.alert("player 2 wins!");
+    if (gameState.state === "playing") {
+      document.addEventListener("keydown", handleKeydown);
+      if (
+        checkForWinner(gameBoard, "black") ||
+        checkForWinner(gameBoard, "red")
+      ) {
+        setCanSend((preVal) => true);
+        setGameState((preVal) => ({ ...preVal, state: "gameOver" }));
+        if (gameState.turn === "red") {
+          setWinner((preVal) => "Player 1");
+        }
+        if (gameState.turn === "black") {
+          setWinner((preVal) => "Player 2");
+        }
       }
     }
     return () => {
       document.removeEventListener("keydown", handleKeydown);
     };
-  }, [gameState.turn]);
-
-  useEffect(() => {
-    const gameRef = db.ref("games").orderByChild("gameId").equalTo(gameId);
-    const onGameUpdated = (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const updatedState = Object.values(data)[0];
-        setGameState(updatedState);
-        setCanSend((preVal) => false);
-        if (updatedState.lastChange) {
-          const newGameBoard = [...gameBoard];
-          const [col, row, player] = updatedState.lastChange.split("/");
-          newGameBoard[col][row] = player;
-          setGameBoard(newGameBoard);
-        }
-      }
-    };
-    const addedListener = gameRef.on("value", onGameUpdated);
-    return () => {
-      gameRef.off("value", onGameUpdated);
-    };
-  }, [gameId]);
+  }, [gameState.turn, gameState.state]);
 
   const checkForOpenSpot = () => {
     for (let i = 0; i < gameBoard[gameState.playingCol].length; i++) {
@@ -113,25 +139,6 @@ export default function CakenektFour({ gameId }) {
       }
     }
     return false;
-  };
-
-  const switchTurns = (lastChange) => {
-    setCanSend((preVal) => true);
-    if (gameState.turn === "red") {
-      setGameState((preVal) => ({
-        ...preVal,
-        turn: "black",
-        lastChange,
-        playingCol: 3,
-      }));
-    } else {
-      setGameState((preVal) => ({
-        ...preVal,
-        turn: "red",
-        lastChange,
-        playingCol: 3,
-      }));
-    }
   };
 
   const checkForWinner = (board, player) => {
@@ -193,6 +200,34 @@ export default function CakenektFour({ gameId }) {
     return false;
   };
 
+  const switchTurns = (lastChange) => {
+    setCanSend((preVal) => true);
+    if (gameState.turn === "red") {
+      setGameState((preVal) => ({
+        ...preVal,
+        turn: "black",
+        lastChange,
+        playingCol: 3,
+      }));
+    } else {
+      setGameState((preVal) => ({
+        ...preVal,
+        turn: "red",
+        lastChange,
+        playingCol: 3,
+      }));
+    }
+  };
+  const handlePlayAgain = () => {
+    setCanSend((preVal) => true);
+    setGameState((preVal) => ({
+      ...preVal,
+      lastChange: null,
+      turn: winner === "Player 1" ? "red" : "black",
+      playingCol: 3,
+    }));
+  };
+
   useEffect(() => {
     if (sendIt) {
       const spot = checkForOpenSpot();
@@ -205,34 +240,55 @@ export default function CakenektFour({ gameId }) {
     }
   }, [sendIt]);
 
-  return (
-    <div
-    // style={{
-    //   display: "flex",
-    //   flexDirection: "column",
-    //   alignItems: "center",
-    //   justifyContent: "center",
-    // }}
-    >
-      <div className="centered-text">
-        <h2>
-          {" "}
-          {gameState.turn === "black" ? "Player 1's Turn" : "Player 2's Turn"}
-        </h2>
-      </div>
-      {gameState.turn === "black" ? (
-        <BlackPiece choosingCol={gameState.playingCol} />
-      ) : (
-        <RedPiece choosingCol={gameState.playingCol} />
-      )}
-      <div className="game-grid">
-        <div className="image-div">
-          <img src={gameBoardImage} />
+  if (gameState.state === "gameOver") {
+    return (
+      <div>
+        <div className="centered-text">
+          <h1>{winner && `${winner} wins!`}</h1>
+          <div style={{ margin: "30px 0px" }}>
+            <button onClick={handlePlayAgain}>Play Again?</button>
+          </div>
         </div>
-        <div className="pieces-div">
-          <GameBoard gameBoard={gameBoard} />
+        <div className="game-grid">
+          <div className="image-div">
+            <img src={gameBoardImage} />
+          </div>
+          <div className="pieces-div">
+            <GameBoard gameBoard={gameBoard} />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <>
+        <div>
+          <div className="centered-text">
+            <h2>
+              {" "}
+              {gameState.turn === "black"
+                ? "Player 1's Turn"
+                : "Player 2's Turn"}
+            </h2>
+          </div>
+          {gameState.turn === "black" ? (
+            <BlackPiece choosingCol={gameState.playingCol} />
+          ) : (
+            <RedPiece choosingCol={gameState.playingCol} />
+          )}
+          <div className="game-grid">
+            <div className="image-div">
+              <img src={gameBoardImage} />
+            </div>
+            <div className="pieces-div">
+              <GameBoard gameBoard={gameBoard} />
+            </div>
+          </div>
+        </div>
+        <div style={{ position: "absolute", top: "900px" }}>
+          <Chat gameId={gameId} />
+        </div>
+      </>
+    );
+  }
 }
