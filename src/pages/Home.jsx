@@ -4,7 +4,6 @@ import "../styles/App.css";
 import { createNewGame, updateGame } from "../../api/game";
 import GameContext from "../GameContext";
 import { useContext, useEffect } from "react";
-import { initGameBoardString } from "../components/cakenektFour/initGameBoard";
 
 export default function Home() {
   const navigate = useNavigate();

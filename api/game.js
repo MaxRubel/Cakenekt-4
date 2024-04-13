@@ -32,4 +32,17 @@ const updateGame = (payload) =>
       .catch(reject);
   });
 
-export { createNewGame, updateGame };
+const deleteGame = (gameId) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/games/${gameId}.json`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
+export { createNewGame, updateGame, deleteGame };
