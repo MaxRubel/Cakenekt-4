@@ -65,7 +65,7 @@ export default function NewGame() {
 
   const handleShare = () => {
     navigator.clipboard
-      .writeText(`https://cakenekt4.netlify.app//newGame?gameId=${gameId}`)
+      .writeText(`https://cakenekt4.netlify.app/newGame?gameId=${gameId}`)
       .then(() => {
         window.alert("Game Link Copied!");
       });
