@@ -1,20 +1,23 @@
 /* eslint-disable react/prop-types */
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from "react";
 import firebase from "firebase/compat/app";
-import MessageCard from './MessageCard';
-import createNewMessage from '../../api/chat';
+import MessageCard from "./MessageCard";
+import createNewMessage from "../../api/chat";
 import GameContext from "../GameContext";
-import uniqid from 'uniqid';
+import uniqid from "uniqid";
 
 export default function Chat({ gameId }) {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [allMessages, setAllMessages] = useState([]);
   const db = firebase.database();
   const messagesEndRef = useRef(null);
-  const { isPlayer } = useContext(GameContext)
+  const { isPlayer } = useContext(GameContext);
 
   useEffect(() => {
-    const messagesRef = db.ref('messages').orderByChild('gameId').equalTo(gameId);
+    const messagesRef = db
+      .ref("messages")
+      .orderByChild("gameId")
+      .equalTo(gameId);
 
     const onMessageAdded = (snapshot) => {
       const newMessage = snapshot.val();
@@ -22,14 +25,14 @@ export default function Chat({ gameId }) {
         setAllMessages((prevMessages) => [...prevMessages, newMessage]);
       }
     };
-    const addedListener = messagesRef.on('child_added', onMessageAdded);
+    const addedListener = messagesRef.on("child_added", onMessageAdded);
     return () => {
-      messagesRef.off('child_added', addedListener);
+      messagesRef.off("child_added", addedListener);
     };
   }, [gameId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [allMessages]);
 
   const handleChange = (e) => {
@@ -44,14 +47,14 @@ export default function Chat({ gameId }) {
       message,
       player: isPlayer,
       timeStamp: new Date().toString(),
-    }
+    };
     createNewMessage(payload).then(() => {
-      setMessage((preVal) => '');
-    })
-  }
+      setMessage((preVal) => "");
+    });
+  };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -59,36 +62,32 @@ export default function Chat({ gameId }) {
 
   return (
     <>
-      <div id="row1" >
-        <div className='messages-container'>
+      <div className="messages-container">
+        {allMessages.map((newMessage) => (
+          <MessageCard key={uniqid()} message={newMessage} />
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
 
-          {allMessages.map((newMessage) => (
-            <MessageCard key={uniqid()} message={newMessage} />
-          ))}
-          <div ref={messagesEndRef} />
+      <form
+        className="input-container"
+        id="inputMessage"
+        onSubmit={handleSubmit}
+      >
+        <div className="input-container">
+          <textarea
+            id="chatInput"
+            className="form-control chat-message-input"
+            style={{ width: "800px", fontSize: "20px" }}
+            type="text"
+            name="message"
+            value={message}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Type something..."
+          />
         </div>
-
-        <form
-          className="input-container"
-          id="inputMessage"
-          onSubmit={handleSubmit}
-        >
-          <div className="input-container" >
-            <textarea
-              className="form-control chat-message-input"
-              type="text"
-              name="message"
-              value={message}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Type something..."
-            />
-          </div>
-        </form>
-      </div>
-      <div id="row2 small">
-      </div>
-
+      </form>
     </>
   );
 }
