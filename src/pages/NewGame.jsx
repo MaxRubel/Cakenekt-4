@@ -5,47 +5,46 @@ import { useContext, useEffect, useState } from "react";
 import { updateGame } from "../../api/game";
 import firebase from "firebase/compat/app";
 
-
 export default function NewGame() {
   const db = firebase.database();
   const [searchParams] = useSearchParams();
   const gameId = searchParams.get("gameId");
   const [gameData, setGameData] = useState({
     player1: false,
-    player2: false
-  })
+    player2: false,
+  });
   const { isPlayer, selectPlayer } = useContext(GameContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  useEffect(() => { //firebase listener function
-    const listenerRef = db.ref('games').orderByChild('gameId').equalTo(gameId);
+  useEffect(() => {
+    //firebase listener function
+    const listenerRef = db.ref("games").orderByChild("gameId").equalTo(gameId);
 
     const onGameUpdated = (snapshot) => {
-      const data = snapshot.val()
+      const data = snapshot.val();
       if (data) {
-        const dataFormatted = (Object.values(snapshot.val()))[0]
-        setGameData((preVal) => dataFormatted)
+        const dataFormatted = Object.values(snapshot.val())[0];
+        setGameData((preVal) => dataFormatted);
       }
     };
 
-    const listener = listenerRef.on('value', onGameUpdated);
+    const listener = listenerRef.on("value", onGameUpdated);
 
     return () => {
-      listenerRef.off('value', listener);
+      listenerRef.off("value", listener);
     };
   }, [gameId]);
 
-
-  useEffect(() => { //start game
+  useEffect(() => {
+    //start game
     if (gameData.player1 && gameData.player2) {
       navigate(`/game?gameId=${gameId}`);
     }
-  }, [gameData])
-
+  }, [gameData]);
 
   const handlePlayer1 = () => {
     // if (!isPlayer) {
-    selectPlayer(1)
+    selectPlayer(1);
     const payload = { gameId, player1: true };
     updateGame(payload);
     // } else {
@@ -55,31 +54,31 @@ export default function NewGame() {
 
   const handlePlayer2 = () => {
     // if (!isPlayer) {
-    selectPlayer(2)
+    selectPlayer(2);
     const payload = { gameId, player2: true };
     updateGame(payload);
-    // } 
+    // }
     // else {
     //   window.alert('you are already playing')
     // }
   };
 
   const handleShare = () => {
-    navigator.clipboard.writeText(`https://pokejon.netlify.app/newGame?gameId=${gameId}`).then(() => {
-      window.alert('Game Link Copied!')
-    })
-  }
+    navigator.clipboard
+      .writeText(`https://cakenekt4.netlify.app//newGame?gameId=${gameId}`)
+      .then(() => {
+        window.alert("Game Link Copied!");
+      });
+  };
 
   return (
     <>
       <div className="new-game-container center-container">
-        <button onClick={handleShare}>
-          Share Link
-        </button>
+        <button onClick={handleShare}>Share Link</button>
         {gameData.player1 ? (
-          <button
-            className="width300"
-            disabled>Player 1 has joined ⚔️</button>
+          <button className="width300" disabled>
+            Player 1 has joined ⚔️
+          </button>
         ) : (
           <button
             className="width300"
@@ -91,9 +90,9 @@ export default function NewGame() {
           </button>
         )}
         {gameData.player2 ? (
-          <button
-            className="width300"
-            disabled>Player 2 has joined 🧙‍♂️</button>
+          <button className="width300" disabled>
+            Player 2 has joined 🧙‍♂️
+          </button>
         ) : (
           <button
             className="width300"
