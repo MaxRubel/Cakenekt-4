@@ -1,0 +1,293 @@
+.game-grid {
+  position: relative;
+}
+
+.game-page-container {
+  display: flex;
+  justify-content: center;
+}
+
+.game-container {
+  width: 800px;
+}
+
+.piece {
+  height: 120px;
+}
+
+.column {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+}
+
+.image-div,
+.pieces-div {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.game-grid {
+  position: absolute;
+  // transform: translate(2%, 2%);
+}
+
+// ---col0---
+.spot00 {
+  position: absolute;
+  top: 565px;
+  left: 10px;
+}
+
+.spot01 {
+  position: absolute;
+  top: 460px;
+  left: 10px;
+}
+
+.spot02 {
+  position: absolute;
+  top: 340px;
+  left: 10px;
+}
+
+.spot03 {
+  position: absolute;
+  top: 231px;
+  left: 10px;
+}
+
+.spot04 {
+  position: absolute;
+  top: 121px;
+  left: 10px;
+}
+
+.spot05 {
+  position: absolute;
+  top: 5px;
+  left: 10px;
+}
+
+//col1
+.spot10 {
+  position: absolute;
+  top: 565px;
+  left: 118px;
+}
+
+.spot11 {
+  position: absolute;
+  top: 460px;
+  left: 118px;
+}
+
+.spot12 {
+  position: absolute;
+  top: 340px;
+  left: 118px;
+}
+
+.spot13 {
+  position: absolute;
+  top: 231px;
+  left: 118px;
+}
+
+.spot14 {
+  position: absolute;
+  top: 121px;
+  left: 118px;
+}
+
+.spot15 {
+  position: absolute;
+  top: 5px;
+  left: 118px;
+}
+
+//col-2
+.spot20 {
+  position: absolute;
+  top: 565px;
+  left: 229px;
+}
+
+.spot21 {
+  position: absolute;
+  top: 460px;
+  left: 229px;
+}
+
+.spot22 {
+  position: absolute;
+  top: 340px;
+  left: 229px;
+}
+
+.spot23 {
+  position: absolute;
+  top: 231px;
+  left: 229px;
+}
+
+.spot24 {
+  position: absolute;
+  top: 121px;
+  left: 229px;
+}
+
+.spot25 {
+  position: absolute;
+  top: 5px;
+  left: 229px;
+}
+
+//col-3
+.spot30 {
+  position: absolute;
+  top: 565px;
+  left: 340px;
+}
+
+.spot31 {
+  position: absolute;
+  top: 460px;
+  left: 340px;
+}
+
+.spot32 {
+  position: absolute;
+  top: 340px;
+  left: 340px;
+}
+
+.spot33 {
+  position: absolute;
+  top: 231px;
+  left: 340px;
+}
+
+.spot34 {
+  position: absolute;
+  top: 121px;
+  left: 340px;
+}
+
+.spot35 {
+  position: absolute;
+  top: 5px;
+  left: 340px;
+}
+
+//col-4
+.spot40 {
+  position: absolute;
+  top: 565px;
+  left: 451px;
+}
+
+.spot41 {
+  position: absolute;
+  top: 460px;
+  left: 451px;
+}
+
+.spot42 {
+  position: absolute;
+  top: 340px;
+  left: 451px;
+}
+
+.spot43 {
+  position: absolute;
+  top: 231px;
+  left: 451px;
+}
+
+.spot44 {
+  position: absolute;
+  top: 121px;
+  left: 451px;
+}
+
+.spot45 {
+  position: absolute;
+  top: 5px;
+  left: 451px;
+}
+
+//col-5
+.spot50 {
+  position: absolute;
+  top: 565px;
+  left: 563px;
+}
+
+.spot51 {
+  position: absolute;
+  top: 460px;
+  left: 563px;
+}
+
+.spot52 {
+  position: absolute;
+  top: 340px;
+  left: 563px;
+}
+
+.spot53 {
+  position: absolute;
+  top: 231px;
+  left: 563px;
+}
+
+.spot54 {
+  position: absolute;
+  top: 121px;
+  left: 563px;
+}
+
+.spot55 {
+  position: absolute;
+  top: 5px;
+  left: 563px;
+}
+
+.spot60 {
+  position: absolute;
+  top: 565px;
+  left: 674px;
+}
+
+.spot61 {
+  position: absolute;
+  top: 460px;
+  left: 674px;
+}
+
+.spot62 {
+  position: absolute;
+  top: 340px;
+  left: 674px;
+}
+
+.spot63 {
+  position: absolute;
+  top: 231px;
+  left: 674px;
+}
+
+.spot64 {
+  position: absolute;
+  top: 121px;
+  left: 674px;
+}
+
+.spot65 {
+  position: absolute;
+  top: 5px;
+  left: 674px;
+}
