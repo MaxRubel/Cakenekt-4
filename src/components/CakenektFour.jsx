@@ -67,6 +67,7 @@ export default function CakenektFour({ gameId }) {
   }, [gameId]);
 
   useEffect(() => {
+    //delete after window close
     const onbeforeunloadFn = () => {
       deleteGame(gameId);
     };
@@ -78,6 +79,7 @@ export default function CakenektFour({ gameId }) {
 
   const handleKeydown = (e) => {
     if (
+      //cancel keypresses
       gameState.state === "gameOver" ||
       e.srcElement.id === "chatInput" ||
       (isPlayer === 1 && gameState.turn === "red") ||
@@ -109,7 +111,6 @@ export default function CakenektFour({ gameId }) {
     }
   };
 
-  //add event listener for moving piece
   useEffect(() => {
     if (gameState.state === "playing") {
       document.addEventListener("keydown", handleKeydown);
@@ -133,6 +134,7 @@ export default function CakenektFour({ gameId }) {
   }, [gameState.turn, gameState.state]);
 
   const checkForOpenSpot = () => {
+    //array check
     for (let i = 0; i < gameBoard[gameState.playingCol].length; i++) {
       if (!gameBoard[gameState.playingCol][i]) {
         return i;
@@ -218,6 +220,7 @@ export default function CakenektFour({ gameId }) {
       }));
     }
   };
+
   const handlePlayAgain = () => {
     setCanSend((preVal) => true);
     setGameState((preVal) => ({
@@ -255,6 +258,9 @@ export default function CakenektFour({ gameId }) {
           </div>
           <div className="pieces-div">
             <GameBoard gameBoard={gameBoard} />
+          </div>
+          <div style={{ position: "absolute", top: "900px" }}>
+            <Chat gameId={gameId} />
           </div>
         </div>
       </div>
