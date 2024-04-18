@@ -63,6 +63,13 @@ export default function Chat({ gameId }) {
   return (
     <>
       <div className="messages-container">
+        {allMessages.length < 3 && (
+          <div className="text-message">
+            Host: Use the arrow keys to move left + right
+            <br />
+            Host: Press the down arrow to send it
+          </div>
+        )}
         {allMessages.map((newMessage) => (
           <MessageCard key={uniqid()} message={newMessage} />
         ))}
