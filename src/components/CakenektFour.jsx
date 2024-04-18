@@ -259,7 +259,7 @@ export default function CakenektFour({ gameId }) {
           <div className="pieces-div">
             <GameBoard gameBoard={gameBoard} />
           </div>
-          <div style={{ position: "absolute", top: "900px" }}>
+          <div style={{ position: "absolute", top: "710px" }}>
             <Chat gameId={gameId} />
           </div>
         </div>
