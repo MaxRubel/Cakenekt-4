@@ -2,8 +2,6 @@ import { clientCredentials } from "../src/firebaseConfig";
 
 const endpoint = clientCredentials.databaseURL;
 
-console.log(endpoint);
-
 const createNewGame = (payload) =>
   new Promise((resolve, reject) => {
     fetch(`${endpoint}/games.json`, {
